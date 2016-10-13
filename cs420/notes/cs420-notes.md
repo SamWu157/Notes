@@ -470,3 +470,44 @@
         * PARENT = parent
         * ACTION = action
         * PATH-COST = parent.PATH-COST + problem.STEP-COST(parent.STATE, action)
+
+
+### Frontier and Explored Set
+* Goal of frontier: the next node to expand can be easily located in the frontier
+    * Possible data structure?
+* Goal of explored set: efficient checking for repeated states
+    * Possible data structure?
+
+
+### Search Strategies
+* defined by picking the **order of node expansion**
+* Strategies are evaluated along the following dimensions:
+    * **completeness**: does it always find a solution if one exists?
+    * **optimality**: does it always find a least-cost solution?
+    * **time complexity**: number of nodes generated
+    * **space complexity**: maximum number of nodes in memory
+* Time and space complexity are measured in terms of 
+    * *b*: maximum branching factor of the search tree
+    * *d*: depth of the least-cost solution
+    * *m*: maximum depth of the state space (may be infinity)
+* Search cost(time), total cost(time + space)
+
+
+### Uniformed Search Stategies
+* **Uniformed search** (**blind search**) strategies use only the information availablein the problem definition
+* **informed-search** / **heuristic search**: Strategies that know whether one non-goal state is better than another
+* General uninformed search stategies:
+    * Breadth-first search
+    * Uniform-cost search
+    * Depth-first search
+    * Depth-limited search
+    * Iterative deepening search
+
+
+### Breadth-First Search
+* Expand shallowest unexpanded node
+* **Implementation**:
+    * _Frontier_ is a FIFO queue, i.e. new successors go at end
+
+
+
