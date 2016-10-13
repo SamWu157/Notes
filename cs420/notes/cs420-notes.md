@@ -266,3 +266,155 @@
 * Select a suitable agent design for:
     * Robot soccer player
     * Shopping for used AI books on the Internet
+
+
+9/29/2016
+
+## Uninformed Search 1
+
+### Problem Solving Agent
+* Problem-solving agent: a type of goal based agent
+    * Decide what to do by finding sequences of actions that lead
+* **Goal formulation**: based on current situation and agent's performance measure
+* **Problem formulation**: deciding what actions and states to consider, given a goal
+* **search**: The process of looking for such a sequence
+
+
+### Example: Romania Touring
+* On holiday in Romania; currently in Arad
+* Non-refundable ticket to fly out of Bucharest tomorrow
+* **Formulate goal** (**perf. evaluation**):
+    * be in Bucharest before the flight
+* **Formulate problem**:
+    * **states**: various cities
+    * **actions**: drive between cities
+* **Search**:
+    * sequence of cities
+
+
+### Problem-Solving Agents
+* **function** SIMPLE-PROBLEM-SOLVING-AGENT (_percept_) **returns** an action
+    * **persistent**:
+        * _seq_, an action sequence, initially empty
+        * _state_, some description of the current world state
+        * _goal_, a goal, initially null
+        * _problem_, a problem formulation
+    * _state_ - UPDATE-STATE (_state_, _percept_)
+    * **if** _seq_ is empty **then**
+        * _goal_ - FORMULATE-GOAL (_state_)
+        * _problem_ - FORMULATE-PROBLEM (_state_, _goal_)
+        * _seq_ - SEARCH (_problem_)
+        * **if** _seq_ = _failure_ **then return** a null action
+    * _action_ - FIRST (_seq_)
+    * _seq_ - REST (_seq_)
+    * **return** _action_
+
+
+### Aspects of the Simple Problem Solver
+* Where does it fit into the agents and environment discussion?
+    * Static environment
+    * observable
+    * Discrete
+    * Deterministic
+    * **Open-loop** system: percepts are ignored, thus break the loop between agent and environment
+
+
+### Well-Defined Probelems
+* A problem can be defined formally by five components:
+    1. Initial state
+    2. Actions
+    3. Transition Model: description of what each action does (successor)
+    4. Goal test
+    5. Path cost
+
+
+### Problem Formulation - 5 Components
+* **Intial state**: In(_Arad_)
+* **Actions**, if current state is In(Arad), actions = {Go(Sibu), Go(Timisoara), Go(Zerind)}
+* **Transition model**:
+    * e.g. Results(In(Arad), Go(_Sibiu_)) = In(_Sibiu_)
+* **Goal test**, determines whether a given state is a goal state
+    * explicit, e.g. In(_Bucharest_)
+    * implicit, e.g. checkmate
+* **Path cost function** that assigns a numeric cost to each path
+    * e.g distance traveled
+    * step cost: _c(x, a, y)_
+* **Solution**, a path from the initial state to a goal state
+* **Optimal solution**: the path that has the lowest path cost among all solutions; measured by the path cost function
+
+
+### Problem Abstraction
+* Real world is complex and has more details 
+* **abstraction**: Irrelevant details should be removed from state space and actions
+    * abstraction is **valid**, if we can expand it into a solution in the more detailed world
+    * abstraction is **useful**, if carrying out the actions in the solution is easier than the original problem
+    * remove as much detail as possible while retaining validity and usefullness
+
+
+### Example Vacuum-Cleaner
+* **States**
+    * 8 states
+* **Initial state**
+    * any state
+* **Actions**
+    * Left, Right, Suck
+* **Transition model**
+    * complete state space
+* **Goal test**
+    * whether both squares are clean
+* **Path cost**
+    * each step costs 1
+
+
+### Example: 8-puzzle
+* **States**:
+    * location of each tile and the blank
+* **Initial state**: any, 9!/2
+* **Actions**:
+    * blank moves Left, Right, Up, or Down
+* **Transition model**:
+    * Given a state and action, returns the resulting state
+* **Goal Test**: Goal configuration
+* **Path cost**: Each step costs 1
+
+
+### Missionaries and Cannibals
+* 3 missionaries and 3 cannibals need to cross a river
+* 1 boat can carry 1 or 2 people
+* Find a way to get everyone to the other side, without ever leaving the group of missionaries in one place outnumbered by the cannibals in that place
+
+
+### Problem Formulation
+* **States**:
+    * <m, c, b> representing the # of missionaries and the # of cannibals, and the position of the boat
+* **Initial state**:
+    * <3, 3, 1>
+* **Actions**:
+    * take 1 missionary, 1 cannibal, 2 missionaries, 2 cannibals, or 1 missionary and 1 cannibal across the river
+* **Transition model**:
+    * state after an action
+* **Goal test**:
+    * <0, 0, 0>
+* **Path cost**:
+    * number of crossing
+
+
+### Real World Problems
+* Touring problem: visit every city at least once, starting and ending in Bucharest
+* Traveling sales problem: exactly once
+* Robot navigation
+* Internet searching: software robots
+
+
+10/4/2016
+
+## Uninformed Search 2
+
+### Searching for Solutions
+* **Search tree**: generated by initial state and possible actions
+* Basic idea:
+* offline, simulated exploration of state space by generating successors of already-explored states (**expanding** states)
+* **search stategy** determines the choice of which state to expand
+
+
+
