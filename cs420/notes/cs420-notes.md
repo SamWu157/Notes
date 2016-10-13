@@ -417,4 +417,56 @@
 * **search stategy** determines the choice of which state to expand
 
 
+### Terminologies
+* **Frontier**: set of all leaf nodes available for expansion at any given point
+* **Repeated state**
+* **Loopy path**: Arad to Sibiu to Arad
+* **Redundant path**: more than one way to get from one state to another
+* Sometimes, redundant paths are unavoidable
+    * SLiding-block puzzle
 
+
+### General Tree Search Algorithm
+* **function** TREE-SEARCH (_problem_) **returns** a solution, or failure
+    * inialize the frontier using the initial state of _problem_
+    * **loop do**
+        * **if** the frontier is empty **then return** failure
+        * choose a leaf node and remove it from the frontier
+        * **if** the node contains a goal state **then return** the corresponding solution
+        * expand the chosen node, adding the resulting nodes to the frontier
+
+
+### Avoiding Repeated States
+* failure to detect repeated states can turn a linear problem into an exponential one!
+* algorithms that forget their history are doomed to repeat it
+* state space size: d ace size: d + 1 -> search tree leaves: 2^d
+
+
+### General Graph Search Algorithm
+* **function** GRAPH-SEARCH (_problem_) **returns** a solution, or failure
+    * inialize the frontier using the initial state of _problem_
+    * **_initialize the explored set to be empty_**
+    * **loop do**
+        * **if** the frontier is empty **then return** failure
+        * choose a leaf node and remove it from the frontier
+        * **if** the node contains a goal state **then return** the corresponding solution
+        * **_add the node to the explored set_**
+        * expand the chosen node, adding the resulting nodes to the frontier
+            * **_only if not in the frontier or explored set_**
+* We augment Tree-Search with a explored set, which remembers every expanded node
+
+
+### Implementation: States vs Nodes
+* **state**: representation of a physical configuration
+* **node**: data structure constituting part of a search tree includes **state**, **parent node**, **action**, **path cost** _g(n)_, **depth**
+* A solution path can be easily extracted
+
+
+### CHILD-NODE function
+* takes a parent node and an action and returns the resulting child node
+* **function** CHILD-NODE(problem, parent, action) **returns** a node
+    * **return** a node with 
+        * STATE = problem.RESULT(parent.STATE, action)
+        * PARENT = parent
+        * ACTION = action
+        * PATH-COST = parent.PATH-COST + problem.STEP-COST(parent.STATE, action)
