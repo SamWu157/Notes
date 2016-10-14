@@ -510,4 +510,81 @@
     * _Frontier_ is a FIFO queue, i.e. new successors go at end
 
 
+### BFS on a Graph
+* **function** BREADTH-FIRST-SEARCH (_problem_) **returns** a solution, or failure
+    * _node_ - a node with STATE = _problem_.INTITIAL-STATE, PATH-COST = 0
+    * **if** _problem_.GOAL-TEST(_node_.STATE) **then return** SOLUTION(_node_)
+    * _frontier_ - a FIFO queue with _node_ as the only element
+    * _explored_ - an empty set
+    * **loop do**
+        * **if** EMPTY?(_frontier) **then return** failure
+        * _node_ - Pop(_frontier_) /*chooses the shallowest node in _frontier_ */
+        * add _node_.STATE to _explored_
+        * **for each** _action_ **in** _problem_.ACTIONS(_node_.STATE) **do**
+            * _child_ - CHILD-NODE(_problem_, _node_, _action_)
+            * **if** _child_.STATE is not in _explored_ or _frontier_ **then**
+                * **if** problem_.GOAL-TEST(_child_.STATE) **then return** SOLUTION(_child_)
+                * _frontier_ - INSERT(_child_._frontier_)
 
+
+
+### Analysis of Breadth-First Search
+* **Complete?**
+    * Yes (if b _is_ finite), the shallowest solution is returned
+* **Time?**
+    * b + b^2 + b^3 + ... + b^d = O(b^d)
+* **Space?**
+    * O(b^d) (keeps every node in memory)
+* **Optimal?**
+    * Yes if step costs are all identical or path cost is a nondecreasing function of the depth of the node
+* **Space** is the bigger problem (more than time)
+* **Time** requirement is still a major factor
+
+
+### How bad is BFS?
+* with b = 10; 1 millin nodes/sec; 1k bytes/node
+    * takes 13 days for the solution to a problem with search depth 12, nodes 10^12
+    * 350 years at depth 16
+* Memory is more of a problem than time
+    * Requires 103G when d = 8
+* Exponential-complexity search problems cannot be solved by uninformed methods for any but the smallest instances
+
+
+### Uniform-Cost Search
+* Expand least-cost unexpanded node
+* **Implementation**:
+    * _Frontier_ = priority queue ordered by path cost g(n)
+* breadth-first = uniform-cost search when? **edges have equal weight**
+* **function** UNIFORM-COST-SEARCH(_problem_) **returns** a solution, or failure
+* _node_ - a node with STATE = _problem_.INITIAL-STATE = _problem_.INITIAL-STATE, PATH-COST = 0
+    * _frontier_ - a priority queue ordered by PATH-COST, with _node_ as the only element
+    * _explore_ - an empty set
+    * **loop do**
+        * **if** EMPTY? (_frontier_) **then return** failure
+        * _node_ - Pop(_frontier_) /*chooses the lowest-cost node in _frontier_*/
+        * **if** _problem_.GOAL-TEST(_node_.STATE) **then return** SOLUTION(_node_)
+        * add._node_.STATE to _explored_
+        * **for each** _action_ **in** _problem_.ACTIONS(_node_.STATE) **do**
+            * _child_ - CHIlD-NODE(_problem_, _node_, _action_) 
+            * **if** _child_.STATE is not in _explored_ or _frontier_ **then**
+                * _frontier_ - INSERT(_child_, _frontier_)
+            * **else if** _child_.STATE is in _frontier_ with higher PATH-COST **then**
+                * replace that _frontier_ node with _child_
+
+
+### Analysis
+* **Complete?**
+    * Yes, if step cost >= e
+* **Time?**
+    * O (b ^ ceiling(C*/e)) where C* is the cost of the optimal solution
+    * # of nodes with g less than or equal to cost of optimal solution
+* **Space**?
+    * O (b ^ ceiling (C*/e))
+    * # of nodes with g less than or equal to cost of optimal solution
+* **Optimal**?
+    * Yes - nodes expanded in increasing order of g(n)
+
+
+### Uniform-Cost Search is Optimal
+* expands nodes in order of their optimal path cost
+* Hence, the first goal node selected for expansion must be the optimal solution 
