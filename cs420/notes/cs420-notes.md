@@ -899,3 +899,165 @@
 * If a collection of admissible heuristics h-1 ... h-m is available, and none of them dominates any of the others, we can choose 
     * h(n) = max{h-1{n}, ... , h-m(n)}
 * We can also get from sub-problem of a given problem
+
+
+10/11/2016
+
+## Local Search
+
+### Search Algorithms So Far
+* Designed to explore search space systematicaly:
+    * keep one or more paths in memory
+    * record which have been explored and which have not
+    * a path to goal represents the solution
+
+
+### Local Search Algorithms
+* In many optimization problems, the **path** to the goal is irrelevant, the goal state itself is the solution
+* state space = set of "complete" configurations
+* Find configuration satisfying constraints e.g. n-queens
+* In such cases we can use **local search algorithms**
+    * keep a **single "current" state** to improve it
+    * use very little memory - usually a constant amount
+    * find reasonable solutions in large or infinite state spaces for which systematic solutions are unsuitable
+    * useful for solving optimization problems e.g. Darwinian evolution, no "goal test" or "path cost"
+
+
+### Example: n-Queen Problem
+* put n queens on an nxn board with no two queens on the same row, column, or diagonal
+
+
+### State Space Landscape
+* Problem: depending on initial state, can get stuck in local maxima/minima
+
+
+### Hill Climbing Search
+* **function** HILL-CLIMBING(_problem_) **returns** a state that is a local maximum
+    * **inputs** _problem_ a problem
+    * **local variables**:
+        * _current_, a node
+        * _neighbor_, a node
+    * _current_ -> MAKE-NODE(INITIAL-STATE[_problem_])
+    * **loop do**
+        * _neighbor_ -> a **highest-valued successor** of _current_
+        * **if** VALUE[neighbor] less than or equal to VALUE[current] **then return** STATE[_current_]
+        * _current_ = _neighbor_
+
+
+### Example: 8-Queen
+* h = number of pairs of queens that are attacking each other, either directly or indirectly
+
+
+### More on Hill Climbing
+* Complete? Optimal?
+* Hill climbing is sometimes called **greedy local search**
+* Although greedy algorithms often perform well, hill climbing gets stuck when:
+    * Local maxima/minima
+    * Ridges
+    * Plateau (shoulder or flat local maxima/minima)
+* The steepest-ascent hill climbing solves only 14% of the randomly-generated 8-queen problems with an avg. of 4 steps
+* **Allowing sideways move** raises the success rate to 94% with an avg. of 21 steps, and 64 steps for each failure
+
+
+### Variants of Hill Climbing
+* **Stochastic hill climbing**:
+    * chooses at random from among uphill moves
+    * converges more slowly, but finds better solutions in some landscapes
+* **First-choice hill climbing**:
+    * generate successors randomly until one is better than the current 
+    * good when a state has many successors
+* **Random-restart hill climbing**:
+    * conduct a series of hill climbing searches from randomly generated initial states, stops when a goal is found
+    * It's complete with probability approaching 1
+
+
+### More on Random-Restart Hill Climbing
+* Assume each hill climbing search has a probability p of success, then the expected number of restarts required is 1/p
+* For 8-queen problem, p = 14% so we need roughly 7 iterations to find  goal
+* Roughly 22 steps
+* Random-restart hill climbing is very effective for n-queen problem
+* 3 million queens can be solved less than 1 min
+
+
+### Some Thoughts
+* NP-hard problems typically have an exponential number of local maxima/minima to get stuck on
+* A hill climbing algorithm that never makes "downhill" (or "uphill") moves is guaranteed to be incomplete
+* A purely random walk - moving to a successor chosen uniformly at random - is complete, but extremely inefficient
+* What should we do?
+* Simulated annealing
+
+
+### Simulated Annealing
+* Idea: escape local maxima by allowing some "bad" moves but **gradually decrease** their frequency
+* **function** SIMULATED-ANNEALING(_problem_, _schedule_) **returns** a solution state
+* **inputs**: 
+* _problem_, a problem
+* _schedule_, a mapping from time to "temperature"
+* **local variable**
+* _current_, a node
+* _next_, a node
+* T, a "temperature" controlling prob. of downward steps
+* _current_, MAKE-NODE(INITIAL-STATE[_problem_])
+* **for** t=1 **to** infinity **do**
+* T = schedule[t]
+* **if** T=0 **then return** _current_
+* change in E = VALUE[_next_] - VALUE[_current_]
+* if change in E less than 0 **then** _current_ = _next_
+* **else** _current_ = _next_ only with probability e^change in E / T
+
+
+### Analysis of Simulated Annealing
+* One can prove: If T decreases slowly enough, then simulated annealing search will find a global optimum with probability approaching 1
+* Widely used in VLSI layout, airline scheduling, etc.
+
+
+### Local Beam Search
+* **Idea**:
+    * keep track of k states rather than just one
+    * Start with k randomly generated states
+    * At each iteration, all the successors of all k states are generated
+    * If any one is a goal state, stop; else select the k best successors from the complete list and repeat
+* Is it the same as running k random-restart searches?
+* Useful information is passed among the k parallel search threads
+
+
+### Genetic Algorithms
+* A successor state is generated by combining two parent states
+* Start with k randomly generated states (**population**)
+* A state or **individual** is represented as a string over a finite alphabet(often a string of 0s and 1s)
+* Evaluation function (**fitness function**) Higher values for better states
+* Produce the next generation of states by **selection, crossover, and mutation**
+* **Fitness function**: number of non-attacking pairs of queens(min = 0, max = 8*7/2 = 28)
+* 24/(24 + 23 + 20 + 11) = 31%
+* 23/(24 + 23 + 20 + 11) = 29% etc
+
+
+### More on Genetic Algorithms
+* Genetic algorithms combine an **uphill** tendency with **random** exploration and **exchange of information** among parallel search threads
+
+
+### A Genetic Algorithm
+* **function** GENETIC-ALGORITHM(_population_, FITNESS-FN) **returns** an individual
+    * **input**: 
+        * _population_, a set of individuals
+        * FITNESS-FN, a function that measures the fitness of an individual
+    * **repeat**
+        * _new-population_ = empty-set
+        * **loop for** i **from** 1 **to** SIZE(_population_) **do**
+            * x = RANDOM-SELECTION(_population_, FITNESS-FN)
+            * y = RANDOM-SELECTION(_population_, FITNESS-FN)
+            * child = REPRODUCE(x, y)
+            * **if** (small random probability) **then** child = MUTATE(child)
+            * add _child_ to _new-population_
+        * _population_ = _new-population_
+    * **until** some individual is fit enough or enough time has elapsed
+    * **return** the best individual in _population_, according to FITNESS-FN
+* **function** REPRODUCE(_x_, _y_) **returns** an individual
+    * **inputs**
+    * x,y, parent individuals
+    * n = LENGTH(x)
+    * c = random number from 1 to n
+    * **return APPEND(SUBSTRING(x,1,c),SUBSTRING(y,c+1,n))
+
+
+
