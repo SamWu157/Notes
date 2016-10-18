@@ -588,3 +588,152 @@
 ### Uniform-Cost Search is Optimal
 * expands nodes in order of their optimal path cost
 * Hence, the first goal node selected for expansion must be the optimal solution 
+
+
+### Depth First Search
+* Expand deepest unexpanded node
+* **Implementation:
+    * _frontier_ = LIFO queue, i.e. put successors at front
+    * Or a recursive function
+
+
+### Properties of DFS
+* depend strongly on whether the graph-search or tree-search version is used
+
+
+### Analysis of DFS + Tree Search
+* **Complete?**
+    * No: fails in infinite-depth spaces, or spaces with loops
+    * Modify to avoid repeated states along path
+        * complete in finite spaces
+* **Time?**
+    * O (b^m): terrible if _m_ is much larger than _d_
+    * but if solutions are dense, may be faster than breadth-first
+**Space?**
+    * O (bm), i.e. linear space!
+**Optimal**
+    * No
+
+
+### Analysis of DFS + Graph Search
+* **Complete?**
+    * No: also fails in infinite-depth spaces
+    * Yes: for finite state spaces
+* **Time?** 
+    * O (b^m): terrible if _m_ is much larger than _d_
+    * but if solutions are dense, may be much faster than bread-first
+* **Space?**
+    * Not linear any more, because of explored set
+* Optimal?
+    * No
+
+
+### Backtracking Search
+* is a variant of DFS
+    * only one successor is generated at a time rather than all successors
+    * Each partially expanded node remembers which successor to generate next
+    * memory requirement: O(m) vs O(bm)
+
+
+### Depth-Limited Search
+* Is the same as depth-first search with depth limit _l_, nodes at depth _l_ are treated as if they have no successors
+* **function** DEPTH-LIMITED-SEARCH (_problem_, _limit_) **retunrs** a solution, or failure/cutoff
+    * **returns** RECURSIVE-DLS(MAKE-NODE(_problem_.INITIAL-STATE), _problem_, _limit_)
+* **function** REUCRSIVE-DLS(_node_, _problem_, _limit_) **returns** a solution, or failure/cutoff
+    * **if** _problem_.GOAL-TEST(_node_.STATE) **then return** SOLUTION(_node_)
+    * **else if** _limit_ = 0 **then return** _cutoff_
+    * **else**
+        * _cutoff-occurred?_ -> false
+        * **for each** _action_ **in** _problem_.ACTIONS(_node_.STATE) **do**
+            * _child_ -> CHILD-NODE (_problem_, _node_, _action_)
+            * _result_ -> RECURSIVE-DLS(_child_,_problem_,_limit_ - 1)
+            * **if** _result_ = _cutoff_ **then** _cutoff-occurred_ -> true
+            * **else if** _result_ != _failure_ **then return** _result_
+        * **if** _cutoff-occurred_? **then return** _cutoff_ **else return** _failure_
+* Compete? **No** Time? **O (b^m)** Space? **Graph: not linear, Tree: O(bm)** Optimal? **No**
+
+
+### Iterative Deepening DF-Search
+* Gradually increase the depth limit until a goal is found
+* Combines the benefits of **depth-first** and **breadth-first** search
+* **function** ITERATIVE-DEEPENING-SEARCH(_problem_) **returns** a solution, or failure
+* **inputs:** _problem_, a problem
+* **for** _depth_ -> 0 **to** infinity **do**
+* _result_ -> DEPTH-LIMITED-SEARCH(_problem_, _depth_)
+* **if** _result_ != _cutoff_ **then return** _result_
+
+
+### Analysis of Iterative Deepening Search
+* Number of nodes generated in a depth-limited search to depth _d_ with branching factor _b_:
+* N-_DLS_ = b^0 + b^1 + b^2 + ... + b^d-2 + b^d-1 + b^d
+* Number of nodes generated in an iterative deepening search to depth _d_ with branching factor _b_:
+* N-_IDS_ = (d+1)b^0 + db^1 + (d-1)b^2 + ... + 3b^d-2 + 2b^d-1 + b^d
+* For b = 10, d = 5
+* N-dls = 1 + 10 + 100 + 1000 + 10000 + 100000 = 111111
+* N-IDS = 6 + 50 + 400 + 3000 + 20000 + 100000 = 123456
+* Overhead = (123456 - 111111)/111111 = 11%
+* IDS is the preferred uninformed search method when search space is large and depth of solution is unknown
+* **Complete**
+* yes
+* **Time?**
+* (d+1)b^0 + db^1 + (d-1)b^2 + ... + b^d = O(b^d)
+* **Space?**
+* O(bd) (tree search version)
+* **Optimal?**
+* Yes, if step costs are identical or path cost is a nondecreasing function of the depth of the node
+
+
+### Summary of Uninformed Tree Search Strategies
+| Criterion | Breadth-First | Uniform-cost | Depth-First | Depth-Limited | Iterative Deepening |
+| --------- | ------------- | ------------ | ----------- | ------------- | ------------------- |
+| Complete? | Yes           | Yes          | No          | No            | Yes                 |
+| Time?     | O(b^d+1)      | O(b^C*/e)    | O(b^m)      | O(b^l)        | O(b^d)              |
+| Space     | O(b^d+1)      | O(b^C*/e)    | O(bm)       | O(bl)         | O(bd)               |
+| Optimal?  | Yes           | Yes          | No          | No            | Yes                 |
+* Complete and optimal under certain conditions
+* Discussion on bidirectional search
+
+
+### Analysis of Graph Search
+* Much more efficient than Tree-Search
+* Time and space are proportional to the size of the state space
+* Optimality:
+    * uniform-cost search or breadth-first search with identical step costs are still optimal even if it returns the first path found
+    * iterative-deepening, identical step cost or non-decreasing function of depth of a node
+* Tradeoff: depth-first or iterative deepening are **not linear** anymore
+
+
+### Bidirectional Search
+* Runs two simultaneous searches
+    * Forward from initial state
+    * Backward from goal state
+
+
+### Searching with Partial Information
+* **Deterministic, fully observable** -> **single-state problem**
+    * agent knows exactly which state it will be in
+    * solution is a sequence
+* **Deterministic, non-observable** -> **multi-state problem**
+    * also called **sensorless problems (conformant problems)**
+    * agent may have no idea where it is
+    * solution is a sequence
+* **Nondeterministic and/or partially observable** -> **contigency problem**
+    * percepts provide **new** information about current state
+    * often **interleave** search, execution
+    * solution is a tree or policy
+* **Unknown state space** -> **exploration problem ("online")**
+    * states and actions of the environment are unknown
+
+
+### Example: Vacuum World
+* **Single-state** start in #5
+* Solution? **[Right, Suck]**
+* **Multi-state**, start in #[1, 2, ... ,8]
+* Solution? [Right, Suck, Left, Suck]
+
+
+### Contingency Problem
+* **Contingency** start in #5 & #7
+* _Nondeterministic_: suck may dirty a clean carpet
+* _local sensing_: dirt, location only at current location
+* Solution? Percept: [Left, Clean] -> [Right, **if** dirty **then** Suck]
